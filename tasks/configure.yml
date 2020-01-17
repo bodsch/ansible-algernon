@@ -1,0 +1,18 @@
+---
+
+- name: create the systemd service file
+  template:
+    src: algernon.service.j2
+    dest: /etc/systemd/system/algernon.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart algernon
+
+- name: create data directory
+  file:
+    path: "{{ algernon_data_directory }}"
+    state: directory
+    owner: "{{ algernon_system_user }}"
+    group: "{{ algernon_system_group }}"
+    mode: 0755

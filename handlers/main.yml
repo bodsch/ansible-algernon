@@ -1,0 +1,7 @@
+---
+
+- name: restart algernon
+  systemd:
+    name: algernon
+    state: restarted
+  when: algernon_service_state != 'stopped'

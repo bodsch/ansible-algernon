@@ -1,0 +1,58 @@
+---
+
+- name: Install dependencies
+  package:
+    name: "{{ item }}"
+    state: present
+  register: _install_dep_packages
+  until: _install_dep_packages is success
+  retries: 5
+  delay: 2
+  with_items: "{{ algernon_dependencies }}"
+
+- name: Create the algernon group
+  group:
+    name: "{{ algernon_system_group }}"
+    state: present
+    system: true
+  when: algernon_system_group != "root"
+
+- name: Create the algernon user
+  user:
+    name: "{{ algernon_system_user }}"
+    groups: "{{ algernon_system_group }}"
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    createhome: false
+    home: /
+  when: algernon_system_user != "root"
+
+- name: download algernon archive to local folder
+  become: false
+  get_url:
+    url: "https://github.com/xyproto/algernon/releases/download/{{ algernon_version }}/algernon-{{ algernon_version }}-linux.tar.xz"
+    dest: "/tmp/algernon-{{ algernon_version }}-linux.tar.xz"
+  register: _download_archive
+  until: _download_archive is succeeded
+  retries: 5
+  delay: 2
+  delegate_to: localhost
+  check_mode: false
+
+- name: Unpack algernon binary  # noqa 301
+  unarchive:
+    src: /tmp/algernon-{{ algernon_version }}-linux.tar.xz
+    dest: /tmp/
+  delegate_to: localhost
+  become: false
+
+- name: propagate algernon
+  copy:
+    src: "/tmp/algernon-{{ algernon_version }}-linux/algernon.linux"
+    dest: "{{ algernon_bin }}"
+    mode: 0755
+    owner: root
+    group: root
+  notify:
+    - restart algernon

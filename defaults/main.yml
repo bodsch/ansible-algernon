@@ -1,0 +1,28 @@
+---
+
+algernon_version: '1.12.6'
+
+algernon_system_user: algernon
+algernon_system_group: algernon
+
+algernon_bin: /usr/local/bin/algernon
+
+algernon_service_state: started
+
+algernon_data_directory: /var/www/algernon
+
+algernon_listen_port: 8090
+algernon_listen_address: '127.0.0.1'
+
+# for redis support set HOST:PORT, e.g. 127.0.0.1:6379
+algernon_cache_redis: ''
+
+#  Sets a cache mode. The default is "on".
+#    "on"      - Cache everything.
+#    "dev"     - Everything, except Amber,
+#                Lua, GCSS, Markdown and JSX.
+#    "prod"    - Everything, except Amber and Lua.
+#    "small"   - Like "prod", but only files <= 64KB.
+#    "images"  - Only images (png, jpg, gif, svg).
+#    "off"     - Disable caching.
+algernone_cache_mode: "on"

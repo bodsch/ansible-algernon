@@ -1,0 +1,26 @@
+# -*- mode: conf -*-
+
+[Unit]
+Description=Small self-contained pure-Go web server with Lua, Markdown, HTTP/2, QUIC, Redis and PostgreSQL support
+Documentation=https://algernon.roboticoverlords.org/
+After=network.target
+
+[Service]
+User=algernon
+ExecStart={{ algernon_bin }} \
+  --httponly \
+  --autorefresh \
+  --simple \
+  --addr={{ algernon_listen_address }}:{{ algernon_listen_port }} \
+  --dir={{ algernon_data_directory | default('/var/www/algernon') }} \
+  {% if algernon_cache_redis is defined and algernon_cache_redis | length != 0 %}
+  --redis={{ algernon_cache_redis }} \
+  {% endif %}
+  --cache={{ algernone_cache_mode }} \
+  --statcache
+
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
