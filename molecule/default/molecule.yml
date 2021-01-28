@@ -5,56 +5,30 @@ dependency:
 driver:
   name: docker
 
-lint:
-  name: yamllint
-  options:
-    config-file: molecule/default/yaml-lint.yml
-
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+  flake8 .
 
 platforms:
-  # - name: centos7
-  #   image: paulfantom/centos-molecule:7
-  #   docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
-  #   privileged: true
-  #   volumes:
-  #     - /sys/fs/cgroup:/sys/fs/cgroup:ro
-  # - name: fedora
-  #   image: paulfantom/fedora-molecule:27
-  #   docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
-  #   privileged: true
-  #   volumes:
-  #     - /sys/fs/cgroup:/sys/fs/cgroup:ro
-  # - name: bionic
-  #   image: paulfantom/ubuntu-molecule:18.04
-  #   docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
-  #   privileged: true
-  #   volumes:
-  #     - /sys/fs/cgroup:/sys/fs/cgroup:ro
-  # - name: stretch
-  #   image: paulfantom/debian-molecule:9
-  #   docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
-  #   privileged: true
-  #   volumes:
-  #     - /sys/fs/cgroup:/sys/fs/cgroup:ro
-  - name: buster
-    image: paulfantom/debian-molecule:10
-    docker_host: "${DOCKER_HOST:-unix://var/run/docker.sock}"
+  - name: instance
+    image: "diodonfrost/ansible-${MOLECULE_DISTRO:-debian}:${MOLECULE_VERSION:-10}"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
     privileged: true
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    pre_build_image: true
 
 provisioner:
   name: ansible
-  lint:
-    name: ansible-lint
-  playbooks:
-    create: create.yml
-    prepare: prepare.yml
-    converge: playbook.yml
-    destroy: destroy.yml
+  ansible_args:
+    - --diff
+    # - -vvv
+  config_options:
+    defaults:
+      deprecation_warnings: True
+      stdout_callback: yaml
 
 scenario:
-  name: default
   test_sequence:
     - lint
     - destroy
@@ -63,13 +37,8 @@ scenario:
     - create
     - prepare
     - converge
-    # - idempotence
-    # - side_effect
     - verify
     - destroy
 
 verifier:
   name: testinfra
-  lint:
-    name: flake8
-    enabled: true
