@@ -34,15 +34,11 @@ def get_vars(host):
     """
     base_dir, molecule_dir = base_directory()
 
-    # pp.pprint(" => '{}' / '{}'".format(base_dir, molecule_dir))
+    pp.pprint(" => '{}' / '{}'".format(base_dir, molecule_dir))
 
     file_defaults = "file={}/defaults/main.yml name=role_defaults".format(base_dir)
     file_vars = "file={}/vars/main.yml name=role_vars".format(base_dir)
     file_molecule = "file={}/group_vars/all/vars.yml name=test_vars".format(molecule_dir)
-
-    # pp.pprint(file_defaults)
-    # pp.pprint(file_vars)
-    # pp.pprint(file_molecule)
 
     defaults_vars = host.ansible("include_vars", file_defaults).get("ansible_facts").get("role_defaults")
     vars_vars = host.ansible("include_vars", file_vars).get("ansible_facts").get("role_vars")
@@ -60,7 +56,6 @@ def get_vars(host):
 
 def test_files(host):
     files = [
-        "/etc/systemd/system/algernon.service",
         "/usr/local/bin/algernon"
     ]
     for file in files:
@@ -78,7 +73,7 @@ def test_user(host):
 
 def test_service(host):
     s = host.service("algernon")
-#    assert s.is_enabled
+    assert s.is_enabled
     assert s.is_running
 
 

@@ -1,22 +1,5 @@
 ---
 
-- name: Gather variables for each operating system
-  include_vars: "{{ item }}"
-  with_first_found:
-    - "{{ ansible_distribution_file_variety | lower }}.yml"
-    - "{{ ansible_distribution | lower }}.yml"
-    - "{{ ansible_os_family | lower }}.yml"
-  tags:
-    - algernon_install
-    - algernon_configure
-    - algernon_run
-
-- import_tasks: preflight.yml
-  tags:
-    - algernon_install
-    - algernon_configure
-    - algernon_run
-
 - import_tasks: install.yml
   become: true
   tags:
@@ -29,8 +12,7 @@
 
 - name: Ensure algernon is enabled on boot
   become: true
-  systemd:
-    daemon_reload: true
+  service:
     name: algernon
     enabled: true
     state: started

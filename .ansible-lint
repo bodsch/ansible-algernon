@@ -1,7 +1,4 @@
 
-# quiet: true
-
 skip_list:
-  - '106'  # Role name {} does not match ``^[a-z][a-z0-9_]+$`` pattern
-  - '303'  # Using command rather than module
-
+  - role-name          # Role name {} does not match ``^[a-z][a-z0-9_]+$`` pattern
+  - yaml               # Violations reported by yamllint
