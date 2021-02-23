@@ -76,6 +76,7 @@ def test_service(host):
     assert s.is_enabled
     assert s.is_running
 
+
 @pytest.mark.parametrize("ports", [
     '127.0.0.1:8090',
 ])
