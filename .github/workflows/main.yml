@@ -61,8 +61,8 @@ jobs:
           # - archlinux:latest
           - debian:9
           - debian:10
-          # - ubuntu1804
-          # - ubuntu2004
+          - ubuntu1804
+          - ubuntu2004
           - centos:8
           - oraclelinux:8
         python-version:

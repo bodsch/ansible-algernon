@@ -76,11 +76,13 @@ def test_service(host):
     assert s.is_enabled
     assert s.is_running
 
+@pytest.mark.parametrize("ports", [
+    '127.0.0.1:8090',
+])
+def test_open_port(host, ports):
 
-def test_socket(host):
-    sockets = [
-        "tcp://127.0.0.1:8090"
-    ]
-    for socket in sockets:
-        s = host.socket(socket)
-        assert s.is_listening
+    for i in host.socket.get_listening_sockets():
+        print(i)
+
+    s = host.socket("tcp://{}".format(ports))
+    assert s.is_listening
