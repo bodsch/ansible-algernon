@@ -1,6 +1,8 @@
 ---
 
-algernon_version: '1.12.6'
+algernon_version: '1.12.12'
+
+algernon_archive_name: "algernon-{{ algernon_version }}-linux.tar.xz"
 
 algernon_system_user: algernon
 algernon_system_group: algernon

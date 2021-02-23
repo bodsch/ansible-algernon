@@ -28,10 +28,16 @@
     home: /
   when: algernon_system_user != "root"
 
+- name: re-define archive name
+  set_fact:
+    algernon_archive_name: algernon-{{ algernon_version }}-linux_static.tar.xz
+  when:
+    algernon_version_patch | int > 10
+
 - name: download algernon archive to local folder
   become: false
   get_url:
-    url: "https://github.com/xyproto/algernon/releases/download/{{ algernon_version }}/algernon-{{ algernon_version }}-linux.tar.xz"
+    url: "https://github.com/xyproto/algernon/releases/download/{{ algernon_version }}/{{ algernon_archive_name }}"
     dest: "/tmp/algernon-{{ algernon_version }}-linux.tar.xz"
   register: _download_archive
   until: _download_archive is succeeded
@@ -40,7 +46,7 @@
   delegate_to: localhost
   check_mode: false
 
-- name: Unpack algernon binary  # noqa 301
+- name: Unpack algernon binary
   unarchive:
     src: /tmp/algernon-{{ algernon_version }}-linux.tar.xz
     dest: /tmp/
@@ -49,10 +55,19 @@
 
 - name: propagate algernon
   copy:
-    src: "/tmp/algernon-{{ algernon_version }}-linux/algernon.linux"
-    dest: "{{ algernon_bin }}"
+    src: "/tmp/algernon-{{ algernon_version }}-linux{{
+      '_static' if algernon_version_patch | int > 10 else '' }}/algernon.linux{{
+      '_static' if algernon_version_patch | int > 10 else '' }}"
+    dest: "{{ algernon_bin }}_{{ algernon_version }}"
     mode: 0755
     owner: root
     group: root
+
+- name: create link from algernon_{{ algernon_version }}
+  file:
+    src: "{{ algernon_bin }}_{{ algernon_version }}"
+    dest: "{{ algernon_bin }}"
+    state: link
+    force: true
   notify:
     - restart algernon

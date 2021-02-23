@@ -5,3 +5,11 @@
     name: algernon
     state: restarted
   when: algernon_service_state != 'stopped'
+
+- name: daemon-reload
+  systemd:
+    daemon_reload: true
+    force: true
+  notify: restart algernon
+  when:
+    - ansible_service_mgr == 'systemd'
