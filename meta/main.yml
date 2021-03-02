@@ -1,6 +1,7 @@
 ---
 
 galaxy_info:
+  role_name: algernon
   author: Bodo Schulz
   description: installs and configure algernon
   license: Apache 2.0
@@ -21,6 +22,8 @@ galaxy_info:
     - name: EL
       versions:
         - 8
+    - name: ArchLinux
+
   galaxy_tags:
     - server
     - webserver
