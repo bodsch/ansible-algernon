@@ -1,0 +1,9 @@
+---
+
+algernon_dependencies: []
+
+algernon_config_directory: /etc/default
+
+systemd_lib_directory: /lib/systemd/system
+
+...

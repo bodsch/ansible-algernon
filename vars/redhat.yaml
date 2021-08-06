@@ -1,0 +1,10 @@
+---
+
+algernon_dependencies:
+  - iproute
+
+algernon_config_directory: /etc/sysconfig
+
+systemd_lib_directory: /usr/lib/systemd/system
+
+...

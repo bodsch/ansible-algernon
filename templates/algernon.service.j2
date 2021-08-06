@@ -1,4 +1,5 @@
 # -*- mode: conf -*-
+#jinja2:lstrip_blocks: "True"
 
 [Unit]
 Description = Small self-contained pure-Go web server with Lua, Markdown, HTTP/2, QUIC, Redis and PostgreSQL support
@@ -6,21 +7,51 @@ Documentation = https://algernon.roboticoverlords.org/
 After = network.target
 
 [Service]
-User = algernon
+Type = simple
+User = {{ algernon_system_user }}
+Group = {{ algernon_system_group }}
+
+EnvironmentFile = {{ algernon_config_directory }}/algernon
+
 ExecStart = {{ algernon_bin }} \
   --httponly \
   --autorefresh \
   --simple \
-  --addr={{ algernon_listen_address }}:{{ algernon_listen_port }} \
-  --dir={{ algernon_data_directory | default('/var/www/algernon') }} \
-  {% if algernon_cache_redis is defined and algernon_cache_redis | length != 0 %}
-  --redis={{ algernon_cache_redis }} \
-  {% endif -%}
-  --cache={{ algernone_cache_mode }} \
-  --statcache
+{% if algernon_config.redis is defined and
+      algernon_config.redis.host is defined and
+      algernon_config.redis.port is defined and
+      algernon_config.redis.host | length != 0 and
+      algernon_config.redis.port | int != 0 %}
+  --redis=${ALGERNON_REDIS} \
+{% endif %}
+{% if algernon_config.autorefresh is defined and
+      algernon_config.autorefresh %}
+  --autorefresh \
+{% endif %}
+{% if algernon_config.verbose is defined and
+      algernon_config.verbose %}
+  --verbose \
+{% endif %}
+{% if algernon_config.debug is defined and
+      algernon_config.debug %}
+  --debug \
+{% endif %}
+{% if algernon_config.statcache is defined and
+      algernon_config.statcache %}
+  --statcache \
+{% endif %}
+{% if algernon_config.cache is defined and
+      algernon_config.cache in ['on', 'off', 'dev', 'prod', 'small', 'images'] %}
+  --cache=${ALGERNON_CACHE} \
+{% endif %}
+  --accesslog=${ALGERNON_ACCESS_LOG} \
+  --dir=${ALGERNON_DATA_DIRECTORY} \
+  --addr=${ALGERNON_LISTEN}
 
 ExecReload = /bin/kill -HUP $MAINPID
-Restart = always
+Restart = on-failure
+RestartPreventExitStatus = 255
+RestartSec = 10
 
 [Install]
 WantedBy = multi-user.target

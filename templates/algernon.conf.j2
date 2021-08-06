@@ -1,0 +1,28 @@
+# {{ ansible_managed }}
+#jinja2:lstrip_blocks: "True"
+
+{% if algernon_config.redis is defined and
+      algernon_config.redis.host is defined and
+      algernon_config.redis.port is defined and
+      algernon_config.redis.host | length != 0 and
+      algernon_config.redis.port | int != 0
+%}
+ALGERNON_REDIS="{{ algernon_config.redis.host }}:{{ algernon_config.redis.port }}"
+{% endif %}
+
+{% if algernon_config.listen is defined and
+      algernon_config.listen.address is defined and
+      algernon_config.listen.port is defined and
+      algernon_config.listen.address | length != 0 and
+      algernon_config.listen.port | int != 0
+%}
+ALGERNON_LISTEN="{{ algernon_config.listen.address }}:{{ algernon_config.listen.port }}"
+{% else %}
+ALGERNON_LISTEN="127.0.0.1:3000"
+{% endif %}
+
+ALGERNON_DATA_DIRECTORY="{{ algernon_config.data_directory | default('/var/www/algernon') }}"
+
+ALGERNON_ACCESS_LOG="/var/log/algernon.log"
+
+ALGERNON_CACHE="{{ algernon_config.cache }}"
