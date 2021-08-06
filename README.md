@@ -9,3 +9,10 @@ This role deploys an default [algernon](https://github.com/xyproto/algernon) ser
 [issues]: https://github.com/bodsch/ansible-algernon/issues?q=is%3Aopen+is%3Aissue
 [releases]: https://github.com/bodsch/ansible-algernon/releases
 
+## usage
+
+```
+
+
+
+```

@@ -1,0 +1,78 @@
+---
+
+- name: install dependencies
+  package:
+    name: "{{ item }}"
+    state: present
+  register: _install_dep_packages
+  until: _install_dep_packages is success
+  retries: 5
+  delay: 2
+  with_items: "{{ algernon_dependencies }}"
+
+- name: create the algernon group
+  group:
+    name: "{{ algernon_system_group }}"
+    state: present
+    system: true
+  when: algernon_system_group != "root"
+
+- name: create the algernon user
+  user:
+    name: "{{ algernon_system_user }}"
+    groups: "{{ algernon_system_group }}"
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    createhome: false
+    home: /
+  when: algernon_system_user != "root"
+
+- name: re-define archive name
+  set_fact:
+    algernon_archive_name: algernon-{{ algernon_version }}-linux_static.tar.xz
+  when:
+    algernon_version_patch | int > 10
+
+- block:
+    - name: download algernon archive to local folder
+      become: false
+      get_url:
+        url: "https://github.com/xyproto/algernon/releases/download/{{ algernon_version }}/{{ algernon_archive_name }}"
+        dest: "/tmp/algernon-{{ algernon_version }}-linux.tar.xz"
+      register: _download_archive
+      until: _download_archive is succeeded
+      retries: 5
+      delay: 2
+      delegate_to: localhost
+      check_mode: false
+
+    - name: Unpack algernon binary
+      unarchive:
+        src: /tmp/algernon-{{ algernon_version }}-linux.tar.xz
+        dest: /tmp/
+      delegate_to: localhost
+      become: false
+
+    - name: propagate algernon
+      copy:
+        src: "/tmp/algernon-{{ algernon_version }}-linux{{
+          '_static' if algernon_version_patch | int > 10 else '' }}/algernon.linux{{
+          '_static' if algernon_version_patch | int > 10 else '' }}"
+        dest: "{{ algernon_bin }}_{{ algernon_version }}"
+        mode: 0755
+        owner: root
+        group: root
+  when:
+    - not stat_algernon_binary.stat.exists
+
+- name: create link from algernon_{{ algernon_version }}
+  file:
+    src: "{{ algernon_bin }}_{{ algernon_version }}"
+    dest: "{{ algernon_bin }}"
+    state: link
+    force: true
+  notify:
+    - restart algernon
+
+...

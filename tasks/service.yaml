@@ -1,0 +1,13 @@
+---
+
+- name: restart algernon if needed
+  meta: flush_handlers
+
+- name: ensure algernon is enabled on boot
+  become: true
+  service:
+    name: algernon
+    enabled: true
+    state: started
+
+...
