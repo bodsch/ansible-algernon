@@ -27,7 +27,7 @@ Algernon is an stand-alone process to deliver markdown files.
 
 ### default configuration
 
-```
+```yaml
 algernon_version: '1.12.12'
 
 algernon_archive_name: "algernon-{{ algernon_version }}-linux.tar.xz"
