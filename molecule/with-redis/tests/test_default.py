@@ -1,21 +1,27 @@
 
 from ansible.parsing.dataloader import DataLoader
 from ansible.template import Templar
+
+import json
 import pytest
 import os
-import testinfra.utils.ansible_runner
 
-import pprint
-pp = pprint.PrettyPrinter()
+import testinfra.utils.ansible_runner
 
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
 
 
+def pp_json(json_thing, sort=True, indents=2):
+    if type(json_thing) is str:
+        print(json.dumps(json.loads(json_thing), sort_keys=sort, indent=indents))
+    else:
+        print(json.dumps(json_thing, sort_keys=sort, indent=indents))
+    return None
+
+
 def base_directory():
     cwd = os.getcwd()
-    pp.pprint(cwd)
-    pp.pprint(os.listdir(cwd))
 
     if('group_vars' in os.listdir(cwd)):
         directory = "../.."
@@ -33,8 +39,6 @@ def get_vars(host):
 
     """
     base_dir, molecule_dir = base_directory()
-
-    pp.pprint(" => '{}' / '{}'".format(base_dir, molecule_dir))
 
     file_defaults = "file={}/defaults/main.yml name=role_defaults".format(base_dir)
     file_vars = "file={}/vars/main.yml name=role_vars".format(base_dir)

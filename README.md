@@ -19,8 +19,8 @@ Algernon is an stand-alone process to deliver markdown files.
 
 * Debian 9 / 10
 * Ubuntu 18.04 / 20.04
-* CentOS 8
-* Oracle Linux 8
+* CentOS 7 / 8
+* Oracle Linux 7 / 8
 * Arch Linux
 
 ## usage
@@ -52,4 +52,34 @@ algernon_config:
   cache: "on"
   redis:
     host: 127.0.0.1
+```
+
+### redis configuration
+
+```yaml
+algernon_config:
+  ...
+  redis:
+    host: 127.0.0.1
+    port: 6379
+```
+
+### cache configuration
+
+Sets a cache mode.
+
+**The default is `on`.**
+
+| parameter | description |
+| :----     | :-----      |
+| `on`      | Cache everything |
+| `off`     | Disable caching |
+| `dev`     | Everything, except Amber, Lua, GCSS, Markdown and JSX |
+| `prod`    | Everything, except Amber and Lua |
+| `small`   | Like `prod`, but only files <= 64KB |
+
+```yaml
+algernon_config:
+  ...
+  cache: "small"
 ```
