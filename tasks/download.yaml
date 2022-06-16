@@ -21,14 +21,4 @@
     copy: false
   register: _extract_archive
 
-# - name: propagate algernon
-#   copy:
-#     src: "{{ algernon_local_tmp_directory }}/algernon-{{ algernon_version }}-linux{{
-#       '_static' if algernon_version_patch | int > 10 else '' }}/algernon.linux{{
-#       '_static' if algernon_version_patch | int > 10 else '' }}"
-#     dest: "{{ algernon_bin }}_{{ algernon_version }}"
-#     mode: 0755
-#     owner: root
-#     group: root
-
 ...

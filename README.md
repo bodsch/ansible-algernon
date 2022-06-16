@@ -31,14 +31,12 @@ Algernon is an stand-alone process to deliver markdown files.
 ### default configuration
 
 ```yaml
-algernon_version: '1.12.12'
+algernon_version: '1.13.0'
 
-algernon_archive_name: "algernon-{{ algernon_version }}-linux.tar.xz"
+algernon_direct_download: false
 
 algernon_system_user: algernon
 algernon_system_group: algernon
-
-algernon_bin: /usr/local/bin/algernon
 
 algernon_service_state: started
 
