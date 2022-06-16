@@ -1,28 +1,48 @@
 # {{ ansible_managed }}
 #jinja2:lstrip_blocks: "True"
 
-{% if algernon_config.redis is defined and
-      algernon_config.redis.host is defined and
-      algernon_config.redis.port is defined and
-      algernon_config.redis.host | length != 0 and
-      algernon_config.redis.port | int != 0
-%}
-ALGERNON_REDIS="{{ algernon_config.redis.host }}:{{ algernon_config.redis.port }}"
-{% endif %}
-
+{% set _listen = "127.0.0.1:3000" %}
 {% if algernon_config.listen is defined and
       algernon_config.listen.address is defined and
       algernon_config.listen.port is defined and
       algernon_config.listen.address | length != 0 and
       algernon_config.listen.port | int != 0
 %}
-ALGERNON_LISTEN="{{ algernon_config.listen.address }}:{{ algernon_config.listen.port }}"
-{% else %}
-ALGERNON_LISTEN="127.0.0.1:3000"
+{% set _listen = algernon_config.listen.address + ":" + algernon_config.listen.port | string %}
 {% endif %}
 
-ALGERNON_DATA_DIRECTORY="{{ algernon_config.data_directory | default('/var/www/algernon') }}"
-
-ALGERNON_ACCESS_LOG="/var/log/algernon.log"
-
-ALGERNON_CACHE="{{ algernon_config.cache }}"
+OPTIONS="
+  --httponly \
+  --autorefresh \
+  --simple \
+{% if algernon_config.redis is defined and
+      algernon_config.redis.host is defined and
+      algernon_config.redis.port is defined and
+      algernon_config.redis.host | length != 0 and
+      algernon_config.redis.port | int != 0 %}
+  --redis={{ algernon_config.redis.host }}:{{ algernon_config.redis.port }} \
+{% endif %}
+{% if algernon_config.autorefresh is defined and
+      algernon_config.autorefresh %}
+  --autorefresh \
+{% endif %}
+{% if algernon_config.verbose is defined and
+      algernon_config.verbose %}
+  --verbose \
+{% endif %}
+{% if algernon_config.debug is defined and
+      algernon_config.debug %}
+  --debug \
+{% endif %}
+{% if algernon_config.statcache is defined and
+      algernon_config.statcache %}
+  --statcache \
+{% endif %}
+{% if algernon_config.cache is defined and
+      algernon_config.cache in ['on', 'off', 'dev', 'prod', 'small', 'images'] %}
+  --cache={{ algernon_config.cache }} \
+{% endif %}
+  --accesslog=/var/log/algernon.log \
+  --dir={{ algernon_config.data_directory | default('/var/www/algernon') }} \
+  --addr={{ _listen }}
+"

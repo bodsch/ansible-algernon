@@ -1,0 +1,34 @@
+---
+
+- name: download algernon archive
+  become: false
+  delegate_to: "{{ algernon_delegate_to }}"
+  get_url:
+    url: "https://github.com/xyproto/algernon/releases/download/{{ algernon_remote_version }}/{{ algernon_archive_name }}"
+    dest: "{{ algernon_local_tmp_directory }}/algernon-{{ algernon_version }}-linux.tar.xz"
+  register: _download_archive
+  until: _download_archive is succeeded
+  retries: 5
+  delay: 2
+  check_mode: false
+
+- name: extract algernon archive
+  become: false
+  delegate_to: "{{ algernon_delegate_to }}"
+  unarchive:
+    src: "{{ algernon_local_tmp_directory }}/algernon-{{ algernon_version }}-linux.tar.xz"
+    dest: "{{ algernon_local_tmp_directory }}"
+    copy: false
+  register: _extract_archive
+
+# - name: propagate algernon
+#   copy:
+#     src: "{{ algernon_local_tmp_directory }}/algernon-{{ algernon_version }}-linux{{
+#       '_static' if algernon_version_patch | int > 10 else '' }}/algernon.linux{{
+#       '_static' if algernon_version_patch | int > 10 else '' }}"
+#     dest: "{{ algernon_bin }}_{{ algernon_version }}"
+#     mode: 0755
+#     owner: root
+#     group: root
+
+...

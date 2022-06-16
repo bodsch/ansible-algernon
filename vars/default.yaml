@@ -1,6 +1,6 @@
 ---
 
-algernon_dependencies: []
+algernon_requirements: []
 
 algernon_config_directory: /etc/default
 

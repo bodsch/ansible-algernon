@@ -1,77 +1,93 @@
 ---
 
-- name: install dependencies
-  package:
-    name: "{{ item }}"
-    state: present
-  register: _install_dep_packages
-  until: _install_dep_packages is success
-  retries: 5
-  delay: 2
-  with_items: "{{ algernon_dependencies }}"
-
-- name: create the algernon group
-  group:
-    name: "{{ algernon_system_group }}"
-    state: present
-    system: true
-  when: algernon_system_group != "root"
-
-- name: create the algernon user
-  user:
-    name: "{{ algernon_system_user }}"
-    groups: "{{ algernon_system_group }}"
-    append: true
-    shell: /usr/sbin/nologin
-    system: true
-    createhome: false
-    home: /
-  when: algernon_system_user != "root"
-
-- name: re-define archive name
-  set_fact:
-    algernon_archive_name: algernon-{{ algernon_version }}-linux_static.tar.xz
-  when:
-    algernon_version_patch | int > 10
+- name: detect binary file for algernon
+  become: false
+  delegate_to: "{{ algernon_delegate_to }}"
+  stat:
+    path: "{{ algernon_local_tmp_directory }}/algernon-{{ algernon_version }}-linux_{{ ansible_architecture }}_static/algernon"
+  register: stat_file_binary
 
 - block:
-    - name: download algernon archive to local folder
-      become: false
-      get_url:
-        url: "https://github.com/xyproto/algernon/releases/download/{{ algernon_version }}/{{ algernon_archive_name }}"
-        dest: "/tmp/algernon-{{ algernon_version }}-linux.tar.xz"
-      register: _download_archive
-      until: _download_archive is succeeded
-      retries: 5
-      delay: 2
-      delegate_to: localhost
-      check_mode: false
-
-    - name: Unpack algernon binary
-      unarchive:
-        src: /tmp/algernon-{{ algernon_version }}-linux.tar.xz
-        dest: /tmp/
-      delegate_to: localhost
-      become: false
-
-    - name: propagate algernon
+    - name: propagate algernon binaries
       copy:
-        src: "/tmp/algernon-{{ algernon_version }}-linux{{
-          '_static' if algernon_version_patch | int > 10 else '' }}/algernon.linux{{
-          '_static' if algernon_version_patch | int > 10 else '' }}"
-        dest: "{{ algernon_bin }}_{{ algernon_version }}"
+        src: "{{ algernon_local_tmp_directory }}/algernon-{{ algernon_version }}-linux_{{ ansible_architecture }}_static/algernon"
+        dest: "{{ algernon_install_path }}/algernon"
         mode: 0755
-        owner: root
-        group: root
-  when:
-    - not stat_algernon_binary.stat.exists
+        owner: "{{ algernon_system_user }}"
+        group: "{{ algernon_system_group }}"
+        remote_src: "{{ 'true' if algernon_direct_download else 'false' }}"
 
-- name: create link from algernon_{{ algernon_version }}
+    - name: make files executable
+      file:
+        path: "{{ algernon_install_path }}/algernon"
+        mode: 0755
+        owner: "{{ algernon_system_user }}"
+        group: "{{ algernon_system_group }}"
+  when:
+    - stat_file_binary.stat.exists
+
+- name: create local facts
+  template:
+    src: ansible_facts.j2
+    dest: /etc/ansible/facts.d/algernon.fact
+    mode: 0755
+
+- name: create data directory
   file:
-    src: "{{ algernon_bin }}_{{ algernon_version }}"
-    dest: "{{ algernon_bin }}"
+    path: "{{ algernon_data_directory }}"
+    state: directory
+    owner: "{{ algernon_system_user }}"
+    group: "{{ algernon_system_group }}"
+    mode: 0755
+
+- name: logfile
+  block:
+    - name: detect logfile
+      stat:
+        path: "{{ algernon_config.access_log }}"
+      register: _logfile_exists
+
+    - name: create logfile
+      file:
+        path: "{{ algernon_config.access_log }}"
+        state: touch
+        owner: "{{ algernon_system_user }}"
+        group: "{{ algernon_system_group }}"
+        mode: 0666
+      run_once: true
+      when:
+        - not _logfile_exists.stat.exists | default('false')
+  when:
+    - algernon_config.access_log is defined
+    - algernon_config.access_log | length > 0
+
+- name: create link to binary
+  file:
+    src: "{{ algernon_install_path }}/algernon"
+    dest: /usr/bin/algernon
     state: link
     force: true
+    follow: false
+  notify:
+    - restart algernon
+
+- name: create the systemd service file
+  template:
+    src: init/systemd/algernon.service.j2
+    dest: "{{ systemd_lib_directory }}/algernon.service"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - daemon-reload
+
+- name: create the systemd service config file
+  template:
+    src: algernon.conf.j2
+    dest: "{{ algernon_config_directory }}/algernon"
+    owner: root
+    group: root
+    mode: 0644
   notify:
     - restart algernon
 
