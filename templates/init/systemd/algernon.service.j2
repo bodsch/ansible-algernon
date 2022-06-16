@@ -1,0 +1,25 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+# -*- mode: conf -*-
+
+[Unit]
+Description       = Small self-contained pure-Go web server with Lua, Markdown, HTTP/2, QUIC, Redis and PostgreSQL support
+Documentation     = https://algernon.roboticoverlords.org/
+After             = network.target
+
+[Service]
+Type              = simple
+User              = {{ algernon_system_user }}
+Group             = {{ algernon_system_group }}
+
+EnvironmentFile   = {{ algernon_config_directory }}/algernon
+
+ExecStart         = /usr/bin/algernon $OPTIONS
+ExecReload        = /bin/kill -HUP $MAINPID
+
+SyslogIdentifier  = algernon
+Restart           = on-failure
+RestartPreventExitStatus = 255
+RestartSec        = 10
+
+[Install]
+WantedBy          = multi-user.target

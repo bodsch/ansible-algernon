@@ -1,17 +1,15 @@
 ---
 
+algernon_version_minor: "{{ algernon_version.split('.')[1] }}"
 algernon_version_patch: "{{ algernon_version.split('.')[2] }}"
 
-go_arch_map:
-  i386: '386'
-  x86_64: 'amd64'
-  aarch64: 'arm64'
-  armv7l: 'armv7'
-  armv6l: 'armv6'
+algernon_install_path: /usr/local/bin/algernon/{{ algernon_version }}
 
-go_arch: "{{
-          go_arch_map[ansible_architecture] |
-  default(ansible_architecture) }}"
+algernon_delegate_to: localhost
+
+algernon_local_tmp_directory: "{{
+  lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
+  default(lookup('env', 'HOME') ~ '/.cache/ansible/algernon', true) }}/{{ algernon_version }}"
 
 algernon_defaults_config:
   access_log: /var/log/algernon.log
@@ -44,5 +42,16 @@ algernon_defaults_config:
     address: 127.0.0.1
     port: 8090
   data_directory: "/var/www/algernon"
+
+go_arch_map:
+  i386: '386'
+  x86_64: 'amd64'
+  aarch64: 'arm64'
+  armv7l: 'armv7'
+  armv6l: 'armv6'
+
+go_arch: "{{
+          go_arch_map[ansible_architecture] |
+  default(ansible_architecture) }}"
 
 ...

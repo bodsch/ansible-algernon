@@ -5,15 +5,15 @@
   tags:
     - algernon_prepare
 
+- name: download
+  include_tasks: download.yaml
+  when:
+    - not stat_algernon_binary.stat.exists
+
 - import_tasks: install.yaml
   become: true
   tags:
     - algernon_install
-
-- import_tasks: configure.yaml
-  become: true
-  tags:
-    - algernon_configure
 
 - import_tasks: service.yaml
   become: true
