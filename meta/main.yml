@@ -6,25 +6,24 @@ galaxy_info:
 
   author: Bodo Schulz
   description: installs and configure algernon
-  license: Apache 2.0
+
+  license: Apache
   min_ansible_version: 2.9
   platforms:
-    - name: Ubuntu
-      versions:
-        # 18.04
-        - bionic
-        # 20.04
-        - focal
+    - name: ArchLinux
     - name: Debian
       versions:
-        # 9
-        - etch
         # 10
         - buster
+        # 11
+        - bullseye
+    - name: Ubuntu
+      versions:
+        # 20.04
+        - focal
     - name: EL
       versions:
         - 8
-    - name: ArchLinux
 
   galaxy_tags:
     - server
@@ -33,3 +32,5 @@ galaxy_info:
     - lua
 
 dependencies: []
+
+...
