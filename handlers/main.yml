@@ -1,15 +1,16 @@
 ---
 
 - name: restart algernon
-  service:
+  ansible.builtin.service:
     name: algernon
     state: restarted
 
 - name: daemon-reload
-  systemd:
+  become: true
+  ansible.builtin.systemd:
     daemon_reload: true
     force: true
-  notify:
-    - restart algernon
+  when:
+    - ansible_service_mgr | lower == "systemd"
 
 ...

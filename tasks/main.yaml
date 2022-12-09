@@ -1,21 +1,24 @@
 ---
 
-- import_tasks: prepare.yaml
+- name: prepare
+  ansible.builtin.import_tasks: prepare.yaml
   become: true
   tags:
     - algernon_prepare
 
 - name: download
-  include_tasks: download.yaml
+  ansible.builtin.include_tasks: download.yaml
   when:
     - not stat_algernon_binary.stat.exists
 
-- import_tasks: install.yaml
+- name: install
+  ansible.builtin.import_tasks: install.yaml
   become: true
   tags:
     - algernon_install
 
-- import_tasks: service.yaml
+- name: service
+  ansible.builtin.import_tasks: service.yaml
   become: true
   tags:
     - algernon_service

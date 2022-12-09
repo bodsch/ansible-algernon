@@ -13,7 +13,7 @@ lint: |
 
 platforms:
   - name: instance
-    image: "bodsch/ansible-${DISTRIBUTION:-debian:10}"
+    image: "bodsch/ansible-${DISTRIBUTION:-debian:11}"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
     privileged: true
@@ -23,17 +23,17 @@ platforms:
 
 provisioner:
   name: ansible
-  # ansible_args:
-  #   - --diff
-  #   # - -vvv
+  ansible_args:
+    - --diff
+    # - -vv
   config_options:
     defaults:
-      deprecation_warnings: True
+      deprecation_warnings: true
       stdout_callback: yaml
 
 scenario:
   test_sequence:
-    - lint
+    # - lint
     - destroy
     - dependency
     - syntax

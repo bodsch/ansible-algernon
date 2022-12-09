@@ -1,7 +1,7 @@
 ---
 
 - name: include OS specific configuration ({{ ansible_distribution }} ({{ ansible_os_family }}) {{ ansible_distribution_major_version }})
-  include_vars: "{{ lookup('first_found', params) }}"
+  ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
       paths:
@@ -17,24 +17,24 @@
       skip: true
 
 - name: update package cache
-  package:
+  ansible.builtin.package:
     update_cache: true
 
 - name: dependecies
+  when:
+    - algernon_requirements is defined
+    - algernon_requirements | count > 0
   block:
     - name: install dependency
-      package:
+      ansible.builtin.package:
         name: "{{ algernon_requirements }}"
         state: present
 
     - name: update facts to get latest information
-      setup:
-  when:
-    - algernon_requirements is defined
-    - algernon_requirements | count > 0
+      ansible.builtin.setup:
 
 - name: define delegate instance for download handling
-  set_fact:
+  ansible.builtin.set_fact:
     algernon_delegate_to: "{{ ansible_host }}"
     algernon_local_tmp_directory: "{{
         lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
@@ -44,36 +44,38 @@
     - algernon_direct_download
 
 - name: detect our installation path '{{ algernon_install_path | dirname }}'
-  stat:
+  ansible.builtin.stat:
     path: "{{ algernon_install_path | dirname }}"
     get_checksum: false
   register: stat_algernon_path
   ignore_errors: true
 
 - name: detect installed algernon binary
-  stat:
+  ansible.builtin.stat:
     path: "{{ algernon_install_path }}/algernon"
   register: stat_algernon_binary
 
 - name: create download directory
   become: false
   delegate_to: "{{ algernon_delegate_to }}"
-  file:
+  ansible.builtin.file:
     path: "{{ algernon_local_tmp_directory }}"
     state: directory
     mode: 0750
   run_once: "{{ 'true' if not algernon_direct_download else 'false' }}"
 
 - name: user and group handling
+  when:
+    - algernon_system_user != "root"
   block:
     - name: create algernon group
-      group:
+      ansible.builtin.group:
         name: "{{ algernon_system_group }}"
         state: present
         system: true
 
     - name: create algernon user
-      user:
+      ansible.builtin.user:
         name: "{{ algernon_system_user }}"
         groups: "{{ algernon_system_group }}"
         append: true
@@ -81,11 +83,9 @@
         system: true
         createhome: false
         home: /nonexistent
-  when:
-    - algernon_system_user != "root"
 
 - name: create install directory
-  file:
+  ansible.builtin.file:
     path: "{{ algernon_install_path }}"
     state: directory
     owner: "{{ algernon_system_user }}"
@@ -93,7 +93,7 @@
     mode: 0755
 
 - name: create ansible local facts directory
-  file:
+  ansible.builtin.file:
     dest: /etc/ansible/facts.d
     state: directory
     owner: root
@@ -101,12 +101,11 @@
     mode: 0775
 
 - name: merge algernon configuration between defaults and custom
-  set_fact:
-    algernon_config: "{{ algernon_defaults_config |
-      combine( algernon_config, recursive=True ) }}"
+  ansible.builtin.set_fact:
+    algernon_config: "{{ algernon_defaults_config | combine(algernon_config, recursive=True) }}"
 
 - name: re-define archive name for 1.12.x
-  set_fact:
+  ansible.builtin.set_fact:
     algernon_archive_name: algernon-{{ algernon_version }}-linux_static.tar.xz
     algernon_remote_version: "{{ algernon_version }}"
   when:
@@ -114,10 +113,10 @@
     - algernon_version_patch | int > 10
 
 - name: re-define archive name for 1.13.x
-  set_fact:
+  ansible.builtin.set_fact:
     algernon_archive_name: algernon-{{ algernon_version }}-linux_{{ ansible_architecture }}_static.tar.xz
     algernon_remote_version: "v{{ algernon_version }}"
   when:
-    - algernon_version_minor | int == 13
+    - algernon_version_minor | int >= 13
 
 ...

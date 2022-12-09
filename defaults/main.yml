@@ -1,6 +1,6 @@
 ---
 
-algernon_version: '1.13.0'
+algernon_version: '1.14.0'
 
 algernon_direct_download: false
 
@@ -14,22 +14,22 @@ algernon_data_directory: /var/www/algernon
 algernon_listen_port: 8090
 algernon_listen_address: '127.0.0.1'
 
-algernon_config:
-  listen:
-    address: "{{ algernon_listen_address }}"
-    port: "{{ algernon_listen_port }}"
-  data_directory: "{{ algernon_data_directory }}"
-  #  Sets a cache mode. The default is "on".
-  #    "on"      - Cache everything.
-  #    "dev"     - Everything, except Amber,
-  #                Lua, GCSS, Markdown and JSX.
-  #    "prod"    - Everything, except Amber and Lua.
-  #    "small"   - Like "prod", but only files <= 64KB.
-  #    "images"  - Only images (png, jpg, gif, svg).
-  #    "off"     - Disable caching.
-  cache: "on"
-  # for redis support set HOST:PORT, e.g. 127.0.0.1:6379
-  redis:
-    host: 127.0.0.1
+algernon_config: {}
+#   listen:
+#     address: "{{ algernon_listen_address }}"
+#     port: "{{ algernon_listen_port }}"
+#   data_directory: "{{ algernon_data_directory }}"
+#   #  Sets a cache mode. The default is "on".
+#   #    "on"      - Cache everything.
+#   #    "dev"     - Everything, except Amber,
+#   #                Lua, GCSS, Markdown and JSX.
+#   #    "prod"    - Everything, except Amber and Lua.
+#   #    "small"   - Like "prod", but only files <= 64KB.
+#   #    "images"  - Only images (png, jpg, gif, svg).
+#   #    "off"     - Disable caching.
+#   cache: "on"
+#   # for redis support set HOST:PORT, e.g. 127.0.0.1:6379
+#   redis:
+#     host: 127.0.0.1
 
 ...

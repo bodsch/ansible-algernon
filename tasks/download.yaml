@@ -3,9 +3,10 @@
 - name: download algernon archive
   become: false
   delegate_to: "{{ algernon_delegate_to }}"
-  get_url:
+  ansible.builtin.get_url:
     url: "https://github.com/xyproto/algernon/releases/download/{{ algernon_remote_version }}/{{ algernon_archive_name }}"
     dest: "{{ algernon_local_tmp_directory }}/algernon-{{ algernon_version }}-linux.tar.xz"
+    mode: 0600
   register: _download_archive
   until: _download_archive is succeeded
   retries: 5
@@ -15,7 +16,7 @@
 - name: extract algernon archive
   become: false
   delegate_to: "{{ algernon_delegate_to }}"
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ algernon_local_tmp_directory }}/algernon-{{ algernon_version }}-linux.tar.xz"
     dest: "{{ algernon_local_tmp_directory }}"
     copy: false
