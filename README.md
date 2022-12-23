@@ -6,14 +6,15 @@ Installs and configure a [algernon](https://github.com/xyproto/algernon) server 
 Algernon is an stand-alone process to deliver markdown files.
 
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/bodsch/ansible-algernon/CI)][ci]
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-algernon/main.yml?branch=main)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-algernon)][issues]
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/bodsch/ansible-algernon)][releases]
+[![Ansible Quality Score](https://img.shields.io/ansible/quality/50067?label=role%20quality)][quality]
 
 [ci]: https://github.com/bodsch/ansible-algernon/actions
 [issues]: https://github.com/bodsch/ansible-algernon/issues?q=is%3Aopen+is%3Aissue
 [releases]: https://github.com/bodsch/ansible-algernon/releases
-
+[quality]: https://galaxy.ansible.com/bodsch/algernon
 
 ### supported operating systems
 
