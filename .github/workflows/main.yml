@@ -2,15 +2,9 @@
 name: CI
 
 on:
-  schedule:
-    - cron: "0 2 * * 0"
-  workflow_dispatch:
   workflow_run:
     workflows:
       - "code linter"
-    branches:
-      - main
-      - feature
     types:
       - completed
 
@@ -19,7 +13,6 @@ defaults:
     working-directory: 'ansible-algernon'
 
 jobs:
-
   arch:
     name: "${{ matrix.image }} / ansible: ${{ matrix.ansible-version }}"
     runs-on: ubuntu-20.04
@@ -34,7 +27,8 @@ jobs:
           - '5.10'
           - '6.7'
           - '7.0'
-
+        scenario:
+          - default
     steps:
       - name: check out the codebase.
         uses: actions/checkout@v3
@@ -53,8 +47,11 @@ jobs:
 
       - name: test with tox
         run: |
-          tox -e ansible_$(printf "${{ matrix.ansible-version }}") \
-            -- molecule test --scenario-name default
+          make \
+            test \
+            -e TOX_SCENARIO="${{ matrix.scenario }}" \
+            -e TOX_ANSIBLE="ansible_${{ matrix.ansible-version }}" \
+            -e DISTRIBUTION="${{ matrix.image }}"
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
@@ -75,7 +72,8 @@ jobs:
           - '5.10'
           - '6.7'
           - '7.0'
-
+        scenario:
+          - default
     steps:
       - name: check out the codebase.
         uses: actions/checkout@v3
@@ -94,8 +92,11 @@ jobs:
 
       - name: test with tox
         run: |
-          tox -e ansible_$(printf "${{ matrix.ansible-version }}") \
-            -- molecule test --scenario-name default
+          make \
+            test \
+            -e TOX_SCENARIO="${{ matrix.scenario }}" \
+            -e TOX_ANSIBLE="ansible_${{ matrix.ansible-version }}" \
+            -e DISTRIBUTION="${{ matrix.image }}"
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
@@ -109,14 +110,15 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - oraclelinux:8
-          - rockylinux:8
-          - almalinux:8
+          - oraclelinux:9
+          - rockylinux:9
+          - almalinux:9
         ansible-version:
           - '5.10'
           - '6.7'
           - '7.0'
-
+        scenario:
+          - default
     steps:
       - name: check out the codebase.
         uses: actions/checkout@v3
@@ -135,8 +137,11 @@ jobs:
 
       - name: test with tox
         run: |
-          tox -e ansible_$(printf "${{ matrix.ansible-version }}") \
-            -- molecule test --scenario-name default
+          make \
+            test \
+            -e TOX_SCENARIO="${{ matrix.scenario }}" \
+            -e TOX_ANSIBLE="ansible_${{ matrix.ansible-version }}" \
+            -e DISTRIBUTION="${{ matrix.image }}"
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'

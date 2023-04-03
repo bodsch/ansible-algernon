@@ -1,5 +1,5 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
 # {{ ansible_managed }}
-#jinja2:lstrip_blocks: "True"
 
 {% set _listen = "127.0.0.1:3000" %}
 {% if algernon_config.listen is defined and

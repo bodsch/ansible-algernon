@@ -1,8 +1,7 @@
 ---
 
 - name: redis
-  src: https://github.com/bodsch/ansible-redis
-  scm: git
-  # version: 1.0.0
+  src: bodsch.redis
+  version: 1.4.0
 
 ...

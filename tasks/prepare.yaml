@@ -34,14 +34,43 @@
       ansible.builtin.setup:
 
 - name: define delegate instance for download handling
+  delegate_to: localhost
+  run_once: "{{ 'true' if not algernon_direct_download else 'false' }}"
   ansible.builtin.set_fact:
     algernon_delegate_to: "{{ ansible_host }}"
     algernon_local_tmp_directory: "{{
         lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
         default('/var/cache/ansible/algernon', true) }}/{{ algernon_version }}"
-  run_once: "{{ 'true' if not algernon_direct_download else 'false' }}"
   when:
     - algernon_direct_download
+
+- name: get latest release
+  delegate_to: localhost
+  become: false
+  run_once: true
+  when:
+    - algernon_version == "latest"
+  block:
+    - name: get latest release
+      delegate_to: localhost
+      become: false
+      run_once: true
+      bodsch.scm.github_latest:
+        project: xyproto
+        repository: algernon
+        user: "{{ lookup('env', 'GH_USER') | default(omit) }}"
+        password: "{{ lookup('env', 'GH_TOKEN') | default(omit) }}"
+        filter_elements:
+          - TLS
+          - win8
+          - rpi3
+          - static
+        # github_tags: true
+      register: _latest_release
+
+    - name: re-define algernon_version
+      ansible.builtin.set_fact:
+        algernon_version: "{{ _latest_release.latest_release }}"
 
 - name: detect our installation path '{{ algernon_install_path | dirname }}'
   ansible.builtin.stat:
