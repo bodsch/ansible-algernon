@@ -27,11 +27,11 @@
         owner: "{{ algernon_system_user }}"
         group: "{{ algernon_system_group }}"
 
-- name: create local facts
-  ansible.builtin.template:
-    src: ansible_facts.j2
-    dest: /etc/ansible/facts.d/algernon.fact
-    mode: 0755
+- name: create custom fact file
+  bodsch.core.facts:
+    name: algernon
+    facts:
+      version: "{{ algernon_version }}"
 
 - name: create data directory
   ansible.builtin.file:

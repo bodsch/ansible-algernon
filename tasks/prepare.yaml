@@ -121,14 +121,6 @@
     group: "{{ algernon_system_group }}"
     mode: 0755
 
-- name: create ansible local facts directory
-  ansible.builtin.file:
-    dest: /etc/ansible/facts.d
-    state: directory
-    owner: root
-    group: root
-    mode: 0775
-
 - name: merge algernon configuration between defaults and custom
   ansible.builtin.set_fact:
     algernon_config: "{{ algernon_defaults_config | combine(algernon_config, recursive=True) }}"
