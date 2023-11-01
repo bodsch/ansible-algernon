@@ -48,14 +48,13 @@ ansible-galaxy collection install --requirements-file collections.yml
 
 ### supported operating systems
 
-* ArchLinux
+* Arch Linux
 * Debian based
-    - Debian 10 / 11
-    - Ubuntu 20.04
-* RedHat based
-    - Alma Linux 8 / 9
-    - Rocky Linux 8 / 9
-    - OracleLinux 8 / 9
+    - Debian 10 / 11 / 12
+    - Ubuntu 20.10 / 22.04
+
+> **RedHat-based systems are no longer officially supported! May work, but does not have to.**
+
 
 ## Contribution
 

@@ -7,7 +7,7 @@ galaxy_info:
   description: installs and configure algernon
 
   license: Apache
-  min_ansible_version: "2.10"
+  min_ansible_version: "2.9"
   platforms:
     - name: ArchLinux
     - name: Debian
@@ -16,13 +16,11 @@ galaxy_info:
         - buster
         # 11
         - bullseye
+        - bookworm
     - name: Ubuntu
       versions:
         # 20.04
         - focal
-    - name: EL
-      versions:
-        - "8"
 
   galaxy_tags:
     - server
