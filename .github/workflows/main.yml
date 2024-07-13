@@ -12,10 +12,14 @@ defaults:
   run:
     working-directory: 'ansible-algernon'
 
+env:
+  PY_COLORS: '1'
+  ANSIBLE_FORCE_COLOR: '1'
+
 jobs:
   arch:
-    name: "${{ matrix.image }} / ansible: ${{ matrix.ansible-version }}"
-    runs-on: ubuntu-20.04
+    name: "${{ matrix.image }} / ansible ${{ matrix.ansible-version }} / python ${{ matrix.python }}"
+    runs-on: ubuntu-22.04
     if: ${{ github.event_name == 'schedule' || github.event.workflow_run.conclusion == 'success' }}
     strategy:
       fail-fast: false
@@ -59,26 +63,21 @@ jobs:
             -e TOX_SCENARIO="${{ matrix.scenario }}" \
             -e TOX_ANSIBLE="ansible_${{ matrix.ansible-version }}" \
             -e DISTRIBUTION="${{ matrix.image }}"
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-          DISTRIBUTION: ${{ matrix.image }}
 
   debian:
-    name: "${{ matrix.image }} / ansible: ${{ matrix.ansible-version }}"
+    name: "${{ matrix.image }} / ansible ${{ matrix.ansible-version }} / python ${{ matrix.python }}"
     runs-on: ubuntu-20.04
     if: ${{ github.event_name == 'schedule' || github.event.workflow_run.conclusion == 'success' }}
     strategy:
       fail-fast: false
       matrix:
         image:
-          - debian:11
           - debian:12
         python_version:
-          - "3.10.11"
-          - "3.11.3"
+          - "3.10"
+          - "3.11"
         ansible-version:
-          - '6.7'
+          - '8.5'
         scenario:
           - default
     steps:
@@ -110,26 +109,22 @@ jobs:
             -e TOX_SCENARIO="${{ matrix.scenario }}" \
             -e TOX_ANSIBLE="ansible_${{ matrix.ansible-version }}" \
             -e DISTRIBUTION="${{ matrix.image }}"
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-          DISTRIBUTION: ${{ matrix.image }}
 
   ubuntu:
-    name: "${{ matrix.image }} / ansible: ${{ matrix.ansible-version }}"
+    name: "${{ matrix.image }} / ansible ${{ matrix.ansible-version }} / python ${{ matrix.python }}"
     runs-on: ubuntu-20.04
-    if: ${{ github.event_name == 'schedule' || github.event.workflow_run.conclusion == 'success' }}
+    needs:
+      - debian
     strategy:
       fail-fast: false
       matrix:
         image:
-          - ubuntu:20.04
           - ubuntu:22.04
         python_version:
-          - "3.10.11"
-          - "3.11.3"
+          - "3.10"
+          - "3.11"
         ansible-version:
-          - '6.7'
+          - '8.5'
         scenario:
           - default
     steps:
@@ -161,7 +156,3 @@ jobs:
             -e TOX_SCENARIO="${{ matrix.scenario }}" \
             -e TOX_ANSIBLE="ansible_${{ matrix.ansible-version }}" \
             -e DISTRIBUTION="${{ matrix.image }}"
-        env:
-          PY_COLORS: '1'
-          ANSIBLE_FORCE_COLOR: '1'
-          DISTRIBUTION: ${{ matrix.image }}
