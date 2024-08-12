@@ -2,19 +2,12 @@
 name: algernon with various configurations
 
 on:
-  #schedule:
-  #  - cron: "45 3 * * 0"
   workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-        type: choice
-        options:
-          - info
-          - warning
-          - debug
+  workflow_run:
+    workflows:
+      - "CI"
+    types:
+      - completed
 
 defaults:
   run:
