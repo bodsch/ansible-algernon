@@ -17,23 +17,43 @@ jobs:
           - "3.12"
 
     steps:
-      - name: Check out the codebase.
+      - name: check out the codebase.
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
-      - name: 🐍 set up python
+      - name: set up python
         uses: actions/setup-python@v5
         with:
           python-version: "${{ matrix.python_version }}"
 
-      - name: Install test dependencies.
+      - name: update pip
         run: |
           python3 -m pip install --upgrade pip
+
+      - name: install pycodestyle
+        run: |
           python3 -m pip install pycodestyle
 
-      - name: Lint code.
+      - name: run pycodestyle
         run: |
           pycodestyle --config=.config/pycodestyle.cfg --statistics --count --exclude=test_*.py .
+
+      - name: install yamllint
+        run: |
+          python3 -m pip install yamllint
+          python3 -m pip install ansible-lint
+
+      - name: run yamllint
+        run: |
+          yamllint .
+
+      - name: install ansible-lint
+        run: |
+          python3 -m pip install ansible-lint
+
+      - name: run ansible lint
+        run:
+          ansible-lint .
 
 ...
