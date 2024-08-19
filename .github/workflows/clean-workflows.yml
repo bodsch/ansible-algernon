@@ -56,26 +56,51 @@ on:
         required: false
 
 jobs:
+
   delete-workflow-runs:
     runs-on: ubuntu-latest
     name: delete old workflow runs
-    permissions:
-      actions: write
-      contents: read
+
     steps:
-      - name: Delete workflow runs
-        uses: Mattraks/delete-workflow-runs@v2
+      - name: Check out the codebase.
+        uses: actions/checkout@v4
         with:
-          token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          retain_days: ${{ github.event.inputs.days }}
-          keep_minimum_runs: ${{ github.event.inputs.minimum_runs }}
-          delete_workflow_pattern: ${{ github.event.inputs.delete_workflow_pattern }}
-          delete_workflow_by_state_pattern: ${{ github.event.inputs.delete_workflow_by_state_pattern }}
-          delete_run_by_conclusion_pattern: >-
-            ${{
-              startsWith(github.event.inputs.delete_run_by_conclusion_pattern, 'Unsuccessful:')
-              && 'action_required,cancelled,failure,skipped'
-              || github.event.inputs.delete_run_by_conclusion_pattern
-            }}
-          dry_run: ${{ github.event.inputs.dry_run }}
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: 🐍 set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: clean workflow
+        run: |
+          make \
+            gh-clean
+
+        env:
+          GH_ACCESS_TOKEN: ${{ github.token }}
+          GH_KEEP_WORKFLOWS: ${{ github.event.inputs.days }}
+
+  # delete-workflow-runs:
+  #   runs-on: ubuntu-latest
+  #   name: delete old workflow runs
+  #   permissions:
+  #     actions: write
+  #     contents: read
+  #   steps:
+  #     - name: Delete workflow runs
+  #       uses: Mattraks/delete-workflow-runs@v2
+  #       with:
+  #         token: ${{ github.token }}
+  #         repository: ${{ github.repository }}
+  #         retain_days: ${{ github.event.inputs.days }}
+  #         keep_minimum_runs: ${{ github.event.inputs.minimum_runs }}
+  #         delete_workflow_pattern: ${{ github.event.inputs.delete_workflow_pattern }}
+  #         delete_workflow_by_state_pattern: ${{ github.event.inputs.delete_workflow_by_state_pattern }}
+  #         delete_run_by_conclusion_pattern: >-
+  #           ${{
+  #             startsWith(github.event.inputs.delete_run_by_conclusion_pattern, 'Unsuccessful:')
+  #             && 'action_required,cancelled,failure,skipped'
+  #             || github.event.inputs.delete_run_by_conclusion_pattern
+  #           }}
+  #         dry_run: ${{ github.event.inputs.dry_run }}

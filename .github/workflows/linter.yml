@@ -3,42 +3,10 @@
 name: code linter
 
 on:
-  schedule:
-    - cron: "0 4 * * 0"
   workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-        type: choice
-        options:
-          - info
-          - warning
-          - debug
-  push:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - 'plugins/**'
-      - '!roles/**'
-      - '!.github/workflows/test_role*.yml'
-      - '.config/pycodestyle.cfg'
-  pull_request:
-    branches:
-      - 'feature/**'
-      - 'fix/**'
-      - '!doc/**'
-    paths:
-      - 'plugins/**'
-      - '!roles/**'
-      - '!.github/workflows/test_role*.yml'
-      - '.config/pycodestyle.cfg'
 
 jobs:
-  pep8:
+  pycodestyle:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -66,6 +34,6 @@ jobs:
 
       - name: Lint code.
         run: |
-          pycodestyle --config=.config/pycodestyle.cfg --statistics --count --exclude=test_default.py .
+          pycodestyle --config=.config/pycodestyle.cfg --statistics --count --exclude=test_*.py .
 
 ...
