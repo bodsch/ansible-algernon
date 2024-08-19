@@ -1,13 +1,13 @@
 #!/bin/bash
 
 set -e
+set -x
 
 org=bodsch
 repo=$(basename $(git rev-parse --show-toplevel))
 
-
-GH_REPOSITORY="${repo}"
-GH_USERNAME="${org:-bodsch}"
-GH_KEEP_WORKFLOWS="${GH_KEEP_WORKFLOWS:-2}"
+export GH_REPOSITORY="${repo}"
+export GH_USERNAME="${org:-bodsch}"
+export GH_KEEP_WORKFLOWS="${GH_KEEP_WORKFLOWS:-2}"
 
 python hooks/gh-clean.py
