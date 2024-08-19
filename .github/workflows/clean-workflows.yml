@@ -78,6 +78,7 @@ jobs:
             gh-clean
 
         env:
+          GH_TOKEN: ${{ github.token }}
           GH_ACCESS_TOKEN: ${{ github.token }}
           GH_KEEP_WORKFLOWS: ${{ github.event.inputs.days }}
 
