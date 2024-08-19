@@ -26,7 +26,9 @@ jobs:
   delete-workflow-runs:
     runs-on: ubuntu-latest
     name: delete old workflow runs
-
+    permissions:
+      actions: write
+      contents: read
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v4
