@@ -40,16 +40,15 @@ def base_directory():
 
 def read_ansible_yaml(file_name, role_name):
     ext_arr = ["yml", "yaml"]
-
     read_file = None
 
     for e in ext_arr:
-        test_file = "{}.{}".format(file_name, e)
+        test_file = f"{file_name}.{e}"
         if os.path.isfile(test_file):
             read_file = test_file
             break
 
-    return "file={} name={}".format(read_file, role_name)
+    return f"file={read_file} name={role_name}"
 
 
 @pytest.fixture()
