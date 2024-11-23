@@ -9,7 +9,7 @@ Algernon is an stand-alone process to deliver markdown files.
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/bodsch/ansible-algernon/main.yml?branch=main)][ci]
 [![GitHub issues](https://img.shields.io/github/issues/bodsch/ansible-algernon)][issues]
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/bodsch/ansible-algernon)][releases]
-[![Ansible Downloads](https://img.shields.io/ansible/role/d/bodsch/ansible?logo=ansible)][galaxy]
+[![Ansible Downloads](https://img.shields.io/ansible/role/d/bodsch/algernon?logo=ansible)][galaxy]
 
 [ci]: https://github.com/bodsch/ansible-algernon/actions
 [issues]: https://github.com/bodsch/ansible-algernon/issues?q=is%3Aopen+is%3Aissue
