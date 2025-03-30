@@ -5,6 +5,10 @@ name: code linter
 on:
   workflow_dispatch:
 
+defaults:
+  run:
+    working-directory: 'ansible-algernon'
+
 jobs:
   pycodestyle:
     runs-on: ubuntu-latest
@@ -37,7 +41,8 @@ jobs:
 
       - name: run pycodestyle
         run: |
-          pycodestyle --config=.config/pycodestyle.cfg --statistics --count --exclude=test_*.py .
+          pycodestyle $PWD --config=.config/pycodestyle.cfg --verbose --statistics --count --exclude=.git,.github,molecule
+          # pycodestyle --config=.config/pycodestyle.cfg --statistics --count --exclude=test_*.py .
 
   yamllint:
     runs-on: ubuntu-latest
