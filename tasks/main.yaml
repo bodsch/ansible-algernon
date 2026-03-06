@@ -7,9 +7,10 @@
     - algernon_prepare
 
 - name: download
-  ansible.builtin.include_tasks: download.yaml
-  when:
-    - not stat_algernon_binary.stat.exists
+  ansible.builtin.import_tasks: download.yaml
+  become: true
+  tags:
+    - algernon_download
 
 - name: install
   ansible.builtin.import_tasks: install.yaml

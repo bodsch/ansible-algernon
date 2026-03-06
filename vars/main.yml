@@ -43,15 +43,8 @@ algernon_defaults_config:
     port: 8090
   data_directory: "/var/www/algernon"
 
-go_arch_map:
-  i386: '386'
-  x86_64: 'amd64'
-  aarch64: 'arm64'
-  armv7l: 'armv7'
-  armv6l: 'armv6'
+algernon_config_directory: /etc/default
 
-go_arch: "{{
-          go_arch_map[ansible_architecture] |
-  default(ansible_architecture) }}"
+systemd_lib_directory: /lib/systemd/system
 
 ...

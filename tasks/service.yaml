@@ -1,9 +1,13 @@
 ---
 
 - name: restart algernon if needed
+  when:
+    - not running_in_check_mode
   ansible.builtin.meta: flush_handlers
 
 - name: ensure algernon is enabled on boot
+  when:
+    - not running_in_check_mode
   become: true
   ansible.builtin.service:
     name: algernon

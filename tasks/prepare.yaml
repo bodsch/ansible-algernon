@@ -1,6 +1,6 @@
 ---
 
-- name: include OS specific configuration ({{ ansible_distribution }} ({{ ansible_os_family }}) {{ ansible_distribution_major_version }})
+- name: include OS specific configuration ({{ ansible_facts.distribution }} ({{ ansible_facts.os_family }}) {{ ansible_facts.distribution_major_version }})
   ansible.builtin.include_vars: "{{ lookup('first_found', params) }}"
   vars:
     params:
@@ -8,22 +8,26 @@
         - "vars"
       files:
         # eg. debian-10 / ubuntu-20.04 / centos-8 / oraclelinux-8
-        - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version }}.yaml"
+        - "{{ ansible_facts.distribution | lower }}-{{ ansible_facts.distribution_major_version }}.yaml"
         # eg. debian / ubuntu / centos / oraclelinux
-        - "{{ ansible_distribution | lower }}.yaml"
+        - "{{ ansible_facts.distribution | lower }}.yaml"
         # eg. redhat / debian
-        - "{{ ansible_os_family | lower }}.yaml"
+        - "{{ ansible_facts.os_family | lower }}.yaml"
         - default.yaml
       skip: true
 
-- name: update package cache
-  ansible.builtin.package:
-    update_cache: true
+- name: detect ansible check_mode
+  bodsch.core.check_mode:
+  register: _check_mode
+
+- name: define running_in_check_mode
+  ansible.builtin.set_fact:
+    running_in_check_mode: '{{ _check_mode.check_mode }}'
 
 - name: dependecies
   when:
-    - algernon_requirements is defined
-    - algernon_requirements | count > 0
+    - not running_in_check_mode
+    - algernon_requirements | default([]) | count > 0
   block:
     - name: install dependency
       ansible.builtin.package:
@@ -32,112 +36,5 @@
 
     - name: update facts to get latest information
       ansible.builtin.setup:
-
-- name: define delegate instance for download handling
-  delegate_to: localhost
-  run_once: "{{ 'true' if not algernon_direct_download else 'false' }}"
-  ansible.builtin.set_fact:
-    algernon_delegate_to: "{{ ansible_host }}"
-    algernon_local_tmp_directory: "{{
-        lookup('env', 'CUSTOM_LOCAL_TMP_DIRECTORY') |
-        default('/var/cache/ansible/algernon', true) }}/{{ algernon_version }}"
-  when:
-    - algernon_direct_download
-
-- name: get latest release
-  delegate_to: localhost
-  become: false
-  run_once: true
-  when:
-    - algernon_version == "latest"
-  block:
-    - name: get latest release
-      delegate_to: localhost
-      become: false
-      run_once: true
-      bodsch.scm.github_latest:
-        project: xyproto
-        repository: algernon
-        user: "{{ lookup('env', 'GH_USER') | default(omit) }}"
-        password: "{{ lookup('env', 'GH_TOKEN') | default(omit) }}"
-        filter_elements:
-          - TLS
-          - win8
-          - rpi3
-          - static
-        # github_tags: true
-      register: _latest_release
-
-    - name: re-define algernon_version
-      ansible.builtin.set_fact:
-        algernon_version: "{{ _latest_release.latest_release }}"
-
-- name: detect our installation path '{{ algernon_install_path | dirname }}'
-  ansible.builtin.stat:
-    path: "{{ algernon_install_path | dirname }}"
-    get_checksum: false
-  register: stat_algernon_path
-  ignore_errors: true
-
-- name: detect installed algernon binary
-  ansible.builtin.stat:
-    path: "{{ algernon_install_path }}/algernon"
-  register: stat_algernon_binary
-
-- name: create download directory
-  become: false
-  delegate_to: "{{ algernon_delegate_to }}"
-  ansible.builtin.file:
-    path: "{{ algernon_local_tmp_directory }}"
-    state: directory
-    mode: 0750
-  run_once: "{{ 'true' if not algernon_direct_download else 'false' }}"
-
-- name: user and group handling
-  when:
-    - algernon_system_user != "root"
-  block:
-    - name: create algernon group
-      ansible.builtin.group:
-        name: "{{ algernon_system_group }}"
-        state: present
-        system: true
-
-    - name: create algernon user
-      ansible.builtin.user:
-        name: "{{ algernon_system_user }}"
-        groups: "{{ algernon_system_group }}"
-        append: true
-        shell: /usr/sbin/nologin
-        system: true
-        createhome: false
-        home: /nonexistent
-
-- name: create install directory
-  ansible.builtin.file:
-    path: "{{ algernon_install_path }}"
-    state: directory
-    owner: "{{ algernon_system_user }}"
-    group: "{{ algernon_system_group }}"
-    mode: 0755
-
-- name: merge algernon configuration between defaults and custom
-  ansible.builtin.set_fact:
-    algernon_config: "{{ algernon_defaults_config | combine(algernon_config, recursive=True) }}"
-
-- name: re-define archive name for 1.12.x
-  ansible.builtin.set_fact:
-    algernon_archive_name: algernon-{{ algernon_version }}-linux_static.tar.xz
-    algernon_remote_version: "{{ algernon_version }}"
-  when:
-    - algernon_version_minor | int == 12
-    - algernon_version_patch | int > 10
-
-- name: re-define archive name for 1.13.x
-  ansible.builtin.set_fact:
-    algernon_archive_name: algernon-{{ algernon_version }}-linux_{{ ansible_architecture }}_static.tar.xz
-    algernon_remote_version: "v{{ algernon_version }}"
-  when:
-    - algernon_version_minor | int >= 13
 
 ...
