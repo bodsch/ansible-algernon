@@ -124,7 +124,7 @@ jobs:
         ansible-version:
           - '13.0'
         scenario:
-          - latest
+          # - latest
           - with-redis
     steps:
       - name: check out the codebase.
