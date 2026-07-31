@@ -30,6 +30,25 @@ provisioner:
   ansible_args:
     - --diff
     - -v
+  # env:
+  #   # ANSIBLE_LOG_PATH corresponds to the `log_path` setting and takes precedence
+  #   # over it. Anchor it to the project directory (molecule runs ansible from the
+  #   # ephemeral scenario dir, so a relative ./logs path would land elsewhere).
+  #   ANSIBLE_LOG_PATH: "${MOLECULE_PROJECT_DIRECTORY}/logs/ansible.log"
+  inventory:
+    # The scm_release task uses delegate_to: localhost and imports python `requests`
+    # on the control node. Pin localhost to the interpreter that started
+    # ansible-playbook (the tox/venv python, where requests is installed).
+    # scm_release ships a `#!/usr/bin/python3` shebang, so AnsiballZ keys interpreter
+    # selection off `ansible_facts.python3_interpreter` (not ansible_facts.python_interpreter) and
+    # would otherwise keep the hardcoded /usr/bin/python3 (which lacks requests).
+    hosts:
+      all:
+        hosts:
+          localhost:
+            ansible_connection: local
+            ansible_python_interpreter: "{{ ansible_playbook_python }}"
+            ansible_python3_interpreter: "{{ ansible_playbook_python }}"
   config_options:
     defaults:
       deprecation_warnings: true
