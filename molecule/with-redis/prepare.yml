@@ -1,7 +1,7 @@
 ---
 
 - name: information
-  hosts: all
+  hosts: instance
   gather_facts: true
 
   pre_tasks:

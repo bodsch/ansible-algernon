@@ -7,6 +7,10 @@ molecule-plugins[docker]
 netaddr
 pytest-testinfra
 tox
+tox-uv
 tox-gh-actions
 yamllint
+requests
 python-dateutil
+packaging
+

@@ -1,5 +1,9 @@
 ---
 
+- name: merge algernon configuration between defaults and custom
+  ansible.builtin.set_fact:
+    algernon_config: "{{ algernon_defaults_config | combine(algernon_config, recursive=True) }}"
+
 - name: user and group handling
   when:
     - not running_in_check_mode

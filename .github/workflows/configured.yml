@@ -41,7 +41,7 @@ jobs:
           ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: 🐍 set up python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "${{ matrix.python_version }}"
 
@@ -87,7 +87,7 @@ jobs:
           ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: 🐍 set up python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "${{ matrix.python_version }}"
 
@@ -124,7 +124,8 @@ jobs:
         ansible-version:
           - '13.0'
         scenario:
-          # - latest
+          - configured
+          - latest
           - with-redis
     steps:
       - name: check out the codebase.
@@ -134,7 +135,7 @@ jobs:
           ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: 🐍 set up python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "${{ matrix.python_version }}"
 

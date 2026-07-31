@@ -1,0 +1,13 @@
+---
+
+algernon_config:
+  verbose: true
+  debug: true
+  listen:
+    address: "{{ algernon_listen_address }}"
+    port: "{{ algernon_listen_port }}"
+
+  data_directory: "{{ algernon_data_directory }}"
+  cache: "small"
+
+...
