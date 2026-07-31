@@ -35,7 +35,7 @@ jobs:
           - default
     steps:
       - name: check out the codebase.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
         with:
           path: 'ansible-algernon'
           ref: ${{ github.event.workflow_run.head_branch }}
@@ -47,6 +47,8 @@ jobs:
 
       - name: install dependencies
         run: |
+          sudo apt-get update -y
+          sudo apt-get install -y python3-dateutil
           python -m pip install --upgrade pip
           pip install -r test-requirements.txt
 
@@ -81,7 +83,7 @@ jobs:
           - default
     steps:
       - name: check out the codebase.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
         with:
           path: 'ansible-algernon'
           ref: ${{ github.event.workflow_run.head_branch }}
@@ -93,6 +95,8 @@ jobs:
 
       - name: install dependencies
         run: |
+          sudo apt-get update -y
+          sudo apt-get install -y python3-dateutil
           python -m pip install --upgrade pip
           pip install -r test-requirements.txt
 
@@ -129,7 +133,7 @@ jobs:
           - with-redis
     steps:
       - name: check out the codebase.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
         with:
           path: 'ansible-algernon'
           ref: ${{ github.event.workflow_run.head_branch }}
@@ -141,6 +145,8 @@ jobs:
 
       - name: install dependencies
         run: |
+          sudo apt-get update -y
+          sudo apt-get install -y python3-dateutil
           python -m pip install --upgrade pip
           pip install -r test-requirements.txt
 

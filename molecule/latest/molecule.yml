@@ -10,9 +10,9 @@ driver:
 
 platforms:
   - name: instance
-    image: "ghcr.io/bodsch/docker-ansible/ansible-${DISTRIBUTION:-debian:12}"
+    image: "ghcr.io/bodsch/docker-ansible/ansible-${DISTRIBUTION:-debian:13}"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
-    docker_host: "${DOCKER_HOST:-unix://run/docker.sock}"
+    docker_host: "${DOCKER_HOST:-unix:///run/docker.sock}"
     privileged: true
     pre_build_image: true
     cgroupns_mode: host
@@ -20,7 +20,7 @@ platforms:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
       - /var/lib/containerd
     capabilities:
-      - SYS_TIME
+      - SYS_ADMIN
     tmpfs:
       - /run
       - /tmp
@@ -54,7 +54,7 @@ provisioner:
       deprecation_warnings: true
       callback_result_format: yaml
       gathering: smart
-      fact_caching_timeout: 320
+      fact_caching_timeout: 120
 
 scenario:
   test_sequence:
